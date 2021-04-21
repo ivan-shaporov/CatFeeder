@@ -1,0 +1,31 @@
+Rotor pitch diameter calculation
+
+RotorPitch = ConnectorDiameter + wall * 2 + PipeDiameter * 2 + wall * 4 + MotorDiameter + 10 - MotorPitch
+
+A = ConnectorDiameter + wall * 2 + PipeDiameter * 2 + wall * 4 + MotorDiameter + 10
+
+RotorPitch = A - MotorPitch
+M = RotorPitch / RotorToothCount
+MotorPitch = M * MotorToothCount
+
+RotorPitch = A - M * MotorToothCount
+M = RotorPitch / RotorToothCount
+
+RotorPitch = A - RotorPitch / RotorToothCount * MotorToothCount
+
+RotorPitch + RotorPitch / RotorToothCount * MotorToothCount = A 
+
+RotorPitch * (1 +  MotorToothCount / RotorToothCount) = A 
+
+RotorPitch * (RotorToothCount +  MotorToothCount) / RotorToothCount = A
+
+RotorPitch = A * RotorToothCount / (RotorToothCount +  MotorToothCount)
+
+RotorPitch = (ConnectorDiameter + wall * 2 + PipeDiameter * 2 + wall * 4 + MotorDiameter + 10) * RotorToothCount / (RotorToothCount +  MotorToothCount)
+
+RotorPitch = 140.312
+RotorToothCount = 173
+MotorToothCount = 17
+M = 0.811
+
+M` = 0.812 Rotor gear with tolerance, not tested

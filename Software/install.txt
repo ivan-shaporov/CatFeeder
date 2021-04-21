@@ -1,0 +1,12 @@
+bcm2835
+http://www.airspayce.com/mikem/bcm2835/
+http://www.raspberry-projects.com/pi/programming-in-c/c-libraries/bcm2835-by-mike-mccauley
+cd /home/pi/
+wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.XX.tar.gz 
+wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.68.tar.gz
+tar zxvf bcm2835-1.68.tar.gz
+cd bcm2835-1.68
+./configure
+make
+sudo make check
+sudo make install

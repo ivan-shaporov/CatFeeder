@@ -1,0 +1,9 @@
+https://www.amazon.com/Channel-Driver-Shield-Expansion-%EF%BC%883pcs%EF%BC%89%EF%BC%89/dp/B085WC9CQT/ref=sr_1_6?dchild=1&keywords=L293D&qid=1614389510&sr=8-6
+
+Mini 4CH 4 Channel Motor Drive Driver Shield L293 L293D Expansion Board Module 3pcs
+
+Product description
+New L293D motor shield, the input voltage DC4.5-25V 600mA OUTPUT CURRENT CAPABILITY PER CHANNEL 1.2A PEAK OUTPUT CURRENT (non repetitive)PER CHANNEL ENABLE FACILITY OVERTEMPERATURE PROTECTION LOGICAL "0" INPUT VOLTAGE UP TO 1.5 V(HIGH NOISE IMMUNITY) INTERNAL CLAMP DIODES The Device is a mnolithic integrated high voltage,high current four channel driver designed to accept standard DTL or TTL logic levels and drive inductive loads (such as relays solenoides, DC and stepping motors) and switching power transistors .To simplify use as two bridges each pair of channels is equipped with an enable input. A separate supply input is provided for the logic, allowing operation at a lower voltage and internal clamp diodes are included. This device is suitable for use in switching applications at frequencies up to 5 kHz.
+
+
+Manufacturer	SongHe
