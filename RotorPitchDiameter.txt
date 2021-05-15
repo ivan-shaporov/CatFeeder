@@ -23,6 +23,8 @@ RotorPitch = A * RotorToothCount / (RotorToothCount +  MotorToothCount)
 
 RotorPitch = (ConnectorDiameter + wall * 2 + PipeDiameter * 2 + wall * 4 + MotorDiameter + 10) * RotorToothCount / (RotorToothCount +  MotorToothCount)
 
+for PipeDiameter = 30:
+
 RotorPitch = 140.312
 RotorToothCount = 173
 MotorToothCount = 17
