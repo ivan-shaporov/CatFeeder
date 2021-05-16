@@ -19,11 +19,9 @@ python3 ${dir}/SetPin.py 8
 #6      1280x720	16:9	40-90fps	Partial	2x2
 #7      640x480	    4:3	    40-200fps1	Partial	2x2
 
-#raspivid --timeout 5000 --mode 4 --nopreview --output - && python3 ${dir}/SetPin.py -8 | python3 ${dir}/BlobUpload.py &
-#raspivid --timeout 30000 --mode 4 --nopreview --output - | python3 ${dir}/BlobUpload.py &
-(raspivid --timeout 30000 --mode 4 --nopreview --output ${dir}/last.h264 && MP4Box -fps 30 -add ${dir}/last.h264 ${dir}/last.mp4 && cat ${dir}/last.mp4 | python3 ${dir}/BlobUpload.py > ${dir}/last.log)&
+(raspivid --timeout 30000 --mode 4 --nopreview --output ${dir}/last.h264 && MP4Box -new -add ${dir}/last.h264 ${dir}/last.mp4 && cat ${dir}/last.mp4 | python3 ${dir}/BlobUpload.py >> ${dir}/upload.log 2>&1)&
 
-${dir}/CatFeeder
+${dir}/CatFeeder >> ${dir}/CatFeeder.log 2>&1
 date >> ${dir}/timestamp.log
 sleep 60
 python3 ${dir}/SetPin.py -8
