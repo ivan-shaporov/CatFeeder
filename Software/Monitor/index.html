@@ -9,12 +9,7 @@
 <body>
     <input type="text" id="sas"/>
     <input type="button" value="Refresh" onclick="refresh()"><br/>
-    <div style="height:200px;overflow-y:scroll;">
-        <table id="videos"></table>
-    </div>
-    <video id="player" width="640" height="480" controls>
-        Your browser does not support the video tag.
-    </video>
+    <div id="videos"></div>
 
     <script type="text/javascript">
 
@@ -51,38 +46,26 @@
         }
 
         function appendVideo(blobName) {
-            var row = videos.insertRow(0);
-            var cell = row.insertCell(0);
-
             var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             var month = blobName.substring(5, 5+2)
             month = months[1 * month - 1]
             var day = blobName.substring(8, 8+2)
             var hour = blobName.substring(20, 20+2)
             var minute = blobName.substring(22, 22+2)
+            var name = `${month} ${day} ${hour}:${minute}`
 
             var sas = getSas()
-            var a = document.createElement('a');
-            a.innerHTML = `${month} ${day} ${hour}:${minute}`
-            a.href = `#`
-            a.onclick = () => Play(blobName)
-            cell.appendChild(a);
-        }
 
-        function Play(blobName) {
-            var sas = getSas()
+            var video = document.createElement('div');
             var videoUrl = `${storagebaseurl}/${blobName}?${sas}`;
-            var sources = player.getElementsByTagName('source');
-
-            if (sources.length <= 0) {
-                var source = document.createElement("source");
-                source.setAttribute("src", videoUrl)
-                player.appendChild(source)
-            }
-            else {
-                sources[0].src = videoUrl;
-            }
-            player.load();
+            var html = `
+                <video width="640" height="480" controls>
+                    <source src="${videoUrl}" type="video/mp4">
+                </video><br/>
+                <div>${name}</div>
+                `;
+            video.innerHTML = html
+            videos.prepend(video)
         }
 
         function getSas() {
