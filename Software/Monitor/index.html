@@ -31,7 +31,7 @@
 
                     var xml = new window.DOMParser().parseFromString(response, "text/xml");
 
-                    var xpathResult = document.evaluate("//Blobs/Blob/Name", xml);//, namespaceResolver, resultType, result);
+                    var xpathResult = document.evaluate("//Blobs/Blob/Name[contains(text(), '.mp4')]", xml);//, namespaceResolver, resultType, result);
 
                     videos.innerHTML = "";
 
@@ -59,8 +59,9 @@
 
             var video = document.createElement('div');
             var videoUrl = `${storagebaseurl}/${blobName}?${sas}`;
+            var posterUrl = `${storagebaseurl}/${blobName.replace('.mp4', '.jpg')}?${sas}`;
             var html = `
-                <video width="640" height="480" controls>
+                <video width="640" height="480" controls preload="none" poster="${posterUrl}">
                     <source src="${videoUrl}" type="video/mp4">
                 </video><br/>
                 <div>${name}</div>
