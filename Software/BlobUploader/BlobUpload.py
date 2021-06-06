@@ -1,3 +1,4 @@
+import argparse
 import logging
 import sys
 from datetime import datetime
@@ -22,9 +23,15 @@ def upload(filepath, blob_name):
         except Exception as e:
             logger.exception("Upload failed")
 
-filepath = path.splitext(sys.argv[1])[0] # without extension
+parser = argparse.ArgumentParser()
+parser.add_argument('-f', '--file', help='File for upload.')
+parser.add_argument('-t', '--time', help='Unix timestamp of the event.', type=lambda s: datetime.fromtimestamp(int(s)))
+#parser.add_argument('-t', '--time', type=lambda d: datetime.strptime(d, '%Y%m%d'), help='Time of the event.')
+args = parser.parse_args()
 
-blob_name = datetime.now().strftime('%Y/%m/%d/%Y%m%d_%H%M')
+filepath = path.splitext(args.file)[0] # without extension
+
+blob_name = args.time.strftime('%Y/%m/%d/%Y%m%d_%H%M')
 
 logger.info(f'{datetime.now()} blob_name={blob_name}')
 
