@@ -4,23 +4,23 @@ import RPi.GPIO as GPIO
 
 logger = logging.getLogger('CatFeeder')
 
+LightPin = 8
 
-def On(config): 
+def On(): 
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
-    GPIO.setup(config.LightPin, GPIO.OUT)
-    GPIO.output(config.LightPin, GPIO.HIGH)
+    GPIO.setup(LightPin, GPIO.OUT)
+    GPIO.output(LightPin, GPIO.HIGH)
     logger.info(f'Light on')
 
-def Off(config): 
+def Off(): 
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
-    GPIO.setup(config.LightPin, GPIO.OUT)
-    GPIO.output(config.LightPin, GPIO.LOW)
+    GPIO.setup(LightPin, GPIO.OUT)
+    GPIO.output(LightPin, GPIO.LOW)
     logger.info(f'Light off')
 
 if __name__ == '__main__':
-    import Config
 
     logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s')
 
@@ -32,4 +32,4 @@ if __name__ == '__main__':
     group.add_argument('-off', action='store_true')
     args = parser.parse_args()
 
-    On(Config) if args.on else Off(Config)
+    On() if args.on else Off()
