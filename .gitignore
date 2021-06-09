@@ -364,4 +364,4 @@ FodyWeavers.xsd
 .vscode
 *.bak
 /Downloads
-/Software/BlobUploader/AnalyzeImageConfig.py
+/Software/Services/Config.py
