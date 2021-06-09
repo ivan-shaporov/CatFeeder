@@ -7,7 +7,7 @@ from opencensus.ext.azure.log_exporter import AzureLogHandler, AzureEventHandler
 
 import Light
 from AnalyzeImage import AnalyzeImage, GetImageUrl
-from BlobUpload import UploadPackage, GetBlobnbame
+from BlobUpload import UploadPackage, GetBlobnbame, UploadMetadata
 from Camera import StartRecording, StartEncoding, StartExtracting, GetVideoName
 from FoodDispenser import Feed
 
@@ -78,6 +78,8 @@ def FullCycle(config, skipFood):
             properties['custom_dimensions']['eventType'] = 'Food'
             properties['custom_dimensions']['eventValue'] = eventValue
             events.info(f'Food cycle completed. Food {eventValue}.', extra=properties)
+
+            UploadMetadata({'imagedetections': str(results)}, blobname, config)
     except:
         logger.exception()
         Light.Off()

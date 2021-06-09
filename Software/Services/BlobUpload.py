@@ -9,13 +9,7 @@ from azure.storage.blob import BlobClient
 logger = logging.getLogger('CatFeeder')
 
 def UploadBlob(filepath, blob_name, config):
-    account_url = f'https://{config.StorageAccount}.blob.core.windows.net'
-
-    blob = BlobClient(
-        account_url=account_url,
-        container_name=config.StorageContainer,
-        blob_name=blob_name, 
-        credential=config.BlobUploadSas)
+    blob = _GetBlobClient(blob_name, config)
 
     for attempt in range(config.UploadRetryCount):
         try:
@@ -45,6 +39,22 @@ def UploadPackage(filePath, time, config):
     logger.info(f'{blob_name} finished')
 
     return jpegAvailable
+
+def UploadMetadata(metadata, blob_name, config):
+    blob = _GetBlobClient(blob_name, config)
+    blob.set_blob_metadata(metadata)
+    logger.info(f'{metadata} uploaded')
+
+def _GetBlobClient(blob_name, config):
+    account_url = f'https://{config.StorageAccount}.blob.core.windows.net'
+
+    blob = BlobClient(
+        account_url=account_url,
+        container_name=config.StorageContainer,
+        blob_name=blob_name, 
+        credential=config.BlobUploadSas)
+
+    return blob
 
 if __name__ == '__main__':
     import Config
