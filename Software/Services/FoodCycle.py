@@ -1,3 +1,4 @@
+import argparse
 from datetime import datetime
 import json
 import logging
@@ -12,14 +13,15 @@ from FoodDispenser import Feed
 
 logger = logging.getLogger('CatFeeder')
 
-def FullCycle(config):
+def FullCycle(config, skipFood):
 
     try:
         p = StartRecording(config)
 
         Light.On()
 
-        Feed()
+        if not skipFood:
+            Feed()
         
         error = p.wait()
         if error != 0:
@@ -74,9 +76,19 @@ if __name__ == '__main__':
     now = datetime.now()
     import Config
 
-    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s')
+    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO)
     logger.addHandler(AzureLogHandler(connection_string=Config.AppInsightsConnectionString))
 
-    logger.setLevel(logging.INFO)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-noFood', '-n', action='store_true')
+    parser.add_argument('-videoDuration', '-v', type=int, default=Config.VideoDuration)
+    args = parser.parse_args()
 
-    FullCycle(Config)
+    if args.noFood: 
+        logger.info('Skipping food.')
+
+    if args.videoDuration != Config.VideoDuration:
+        Config.VideoDuration = args.videoDuration
+        logger.info(f'VideoDuration={Config.VideoDuration}')
+
+    FullCycle(Config, skipFood=args.noFood)
