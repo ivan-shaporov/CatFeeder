@@ -79,7 +79,7 @@ def FullCycle(config, skipFood):
             properties['custom_dimensions']['eventValue'] = eventValue
             events.info(f'Food cycle completed. Food {eventValue}.', extra=properties)
 
-            UploadMetadata({'imagedetections': str(results)}, blobname, config)
+            UploadMetadata({'imagedetections': json.dumps(results)}, blobname, config)
     except:
         logger.exception()
         Light.Off()
