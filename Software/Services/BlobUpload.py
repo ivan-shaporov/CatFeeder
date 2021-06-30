@@ -1,7 +1,8 @@
 import argparse
 from datetime import datetime
 import logging
-from os import path
+from os import path, rename
+from time import sleep
 
 from azure.storage.blob import BlobClient
 
@@ -14,15 +15,17 @@ def UploadBlob(filepath, blob_name, config):
     for attempt in range(config.UploadRetryCount):
         try:
             logger.info(f'{filepath} to {blob_name} attempt #{attempt}')
-            with open(filepath, "rb") as data:
+            with open(filepath, 'rb') as data:
                 blob.upload_blob(data)
                 logger.info(f'{blob_name} uploaded')
-                break
+                return True
         except Exception as e:
             logger.exception("Upload failed")
-            return False
+            sleep(8 ** (attempt + 1))
 
-    return True
+    archivePath = path.join(path.dirname(path.abspath(__file__)), 'FailedUploads', path.basename(blob_name))
+    rename(filepath, archivePath)
+    return False
 
 def GetBlobnbame(time): return time.strftime('%Y/%m/%d/%Y%m%d_%H%M')
 
