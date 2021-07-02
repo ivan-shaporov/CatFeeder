@@ -15,6 +15,9 @@ logger = logging.getLogger('CatFeeder')
 events = logging.getLogger('CatFeeder_events')
 
 def FullCycle(config, skipFood):
+    '''
+    Returns True if retry is needed.
+    '''
 
     try:
         p = StartRecording(config)
@@ -29,7 +32,7 @@ def FullCycle(config, skipFood):
         error = p.wait()
         if error != 0:
             logger.error(f'Video recording failed')
-            return
+            return False
 
         p = StartEncoding(Config)
 
@@ -38,51 +41,51 @@ def FullCycle(config, skipFood):
 
         if p.wait() != 0:
             logger.error(f'Video encoding failed')
-            return
+            return False
 
         if StartExtracting(Config).wait() != 0:
             logger.error(f'Poster extracting failed')
-            return
+            return False
 
         jpegAvailable = UploadPackage(GetVideoName(config), now, config)
 
-        if jpegAvailable:
-            blobname = GetBlobnbame(now) + '.jpg'
+        if not jpegAvailable:
+            return False
 
-            results = AnalyzeImage(blobname, config)
+        blobname = GetBlobnbame(now) + '.jpg'
 
-            print (results)
+        results = AnalyzeImage(blobname, config)
 
-            tags = {r['tagName']: r['probability'] for r in results}
-            emptyPlate = 'EmptyPlate' in tags
-            liftedTrunk = 'LiftedTrunk' in tags
-            trunk = 'Trunk' in tags
-            foodPile = 'FoodPile' in tags
+        print (results)
 
-            # if emptyPlate: print('emptyPlate')
-            # if liftedTrunk: print('liftedTrunk')
-            # if trunk: print('trunk')
-            # if foodPile: print('foodPile')
+        tags = {r['tagName']: r['probability'] for r in results}
+        emptyPlate = 'EmptyPlate' in tags
+        liftedTrunk = 'LiftedTrunk' in tags
+        trunk = 'Trunk' in tags
+        foodPile = 'FoodPile' in tags
 
-            imageUrl = GetImageUrl(blobname, config)
-            properties = {'custom_dimensions': {'imageUrl': imageUrl, 'tags': json.dumps(tags)}}
+        imageUrl = GetImageUrl(blobname, config)
+        properties = {'custom_dimensions': {'imageUrl': imageUrl, 'tags': json.dumps(tags)}}
 
-            noFood = (not foodPile) and (liftedTrunk or trunk or emptyPlate)
+        noFood = (not foodPile) and (liftedTrunk or trunk or emptyPlate)
 
-            if noFood:
-                logger.warning(f'Food cycle completed. No food.', extra=properties)
-            else:
-                logger.info(f'Food cycle completed.', extra=properties)
+        if noFood:
+            logger.warning(f'Food cycle completed. No food.', extra=properties)
+        else:
+            logger.info(f'Food cycle completed.', extra=properties)
 
-            eventValue = 'skipped' if skipFood else 'failed' if noFood else 'delivered'
-            properties['custom_dimensions']['eventType'] = 'Food'
-            properties['custom_dimensions']['eventValue'] = eventValue
-            events.info(f'Food cycle completed. Food {eventValue}.', extra=properties)
+        eventValue = 'skipped' if skipFood else 'failed' if noFood else 'delivered'
+        properties['custom_dimensions']['eventType'] = 'Food'
+        properties['custom_dimensions']['eventValue'] = eventValue
+        events.info(f'Food cycle completed. Food {eventValue}.', extra=properties)
 
-            UploadMetadata({'imagedetections': json.dumps(results)}, blobname, config)
+        UploadMetadata({'imagedetections': json.dumps(results)}, blobname, config)
+
+        return noFood and not skipFood
     except:
         logger.exception()
         Light.Off()
+        return False
 
 if __name__ == '__main__':
     now = datetime.now()
@@ -104,4 +107,9 @@ if __name__ == '__main__':
         Config.VideoDuration = args.videoDuration
         logger.info(f'VideoDuration={Config.VideoDuration}')
 
-    FullCycle(Config, skipFood=args.noFood)
+    retry = FullCycle(Config, skipFood=args.noFood)
+
+    if retry:
+        now = datetime.now()
+        logger.info(f'Retrying full cycle...')
+        FullCycle(Config, skipFood=args.noFood)
