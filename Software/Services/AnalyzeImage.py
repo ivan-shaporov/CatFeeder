@@ -19,7 +19,7 @@ def AnalyzeImage(blobname, config):
         logger.error(f'Analyze request failed {response.status_code}: {response.reason}')
         return None
 
-    results = [p for p in response.json()['predictions'] if p['probability'] > config.DetectionThreshold and p['tagName'] not in ['FoodPebble', 'Glare']]
+    results = [p for p in response.json()['predictions'] if p['probability'] > config.DetectionThreshold]
 
     return results
 
