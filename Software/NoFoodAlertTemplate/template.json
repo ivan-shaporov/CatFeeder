@@ -1,0 +1,58 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "scheduledqueryrules_No_food_name": {
+            "defaultValue": "No food",
+            "type": "String"
+        },
+        "components_catmonitor_externalid": {
+            "defaultValue": "/subscriptions/2dfd2875-aa74-47f6-9e65-a61aa956ef83/resourceGroups/catmonitor/providers/microsoft.insights/components/catmonitor",
+            "type": "String"
+        },
+        "actiongroups_catmonitor_externalid": {
+            "defaultValue": "/subscriptions/2dfd2875-aa74-47f6-9e65-a61aa956ef83/resourceGroups/catmonitor/providers/microsoft.insights/actiongroups/catmonitor",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "microsoft.insights/scheduledqueryrules",
+            "apiVersion": "2021-02-01-preview",
+            "name": "[parameters('scheduledqueryrules_No_food_name')]",
+            "location": "westus2",
+            "properties": {
+                "displayName": "[parameters('scheduledqueryrules_No_food_name')]",
+                "severity": 3,
+                "enabled": true,
+                "evaluationFrequency": "P1D",
+                "scopes": [
+                    "[parameters('components_catmonitor_externalid')]"
+                ],
+                "windowSize": "P1D",
+                "criteria": {
+                    "allOf": [
+                        {
+                            "query": "customEvents\n| where customDimensions.eventType == 'Food' and customDimensions.eventValue == 'delivered'\n| project timestamp, customDimensions\n",
+                            "timeAggregation": "Count",
+                            "operator": "LessThanOrEqual",
+                            "threshold": 5,
+                            "failingPeriods": {
+                                "numberOfEvaluationPeriods": 1,
+                                "minFailingPeriodsToAlert": 1
+                            }
+                        }
+                    ]
+                },
+                "autoMitigate": false,
+                "muteActionsDuration": "P1D",
+                "actions": {
+                    "actionGroups": [
+                        "[parameters('actiongroups_catmonitor_externalid')]"
+                    ]
+                }
+            }
+        }
+    ]
+}
