@@ -77,6 +77,7 @@ def FullCycle(config, skipFood):
         eventValue = 'skipped' if skipFood else 'failed' if noFood else 'delivered'
         properties['custom_dimensions']['eventType'] = 'Food'
         properties['custom_dimensions']['eventValue'] = eventValue
+        properties['custom_dimensions']['eventTime'] = str(now)
         events.info(f'Food cycle completed. Food {eventValue}.', extra=properties)
 
         UploadMetadata({'imagedetections': json.dumps(results)}, blobname, config)
@@ -87,8 +88,10 @@ def FullCycle(config, skipFood):
         Light.Off()
         return False
 
+def localnow(): return datetime.now(datetime.utcnow().astimezone().tzinfo)
+
 if __name__ == '__main__':
-    now = datetime.now()
+    now = localnow()
     import Config
 
     logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s')
@@ -110,6 +113,6 @@ if __name__ == '__main__':
     retry = FullCycle(Config, skipFood=args.noFood)
 
     if retry:
-        now = datetime.now()
+        now = datetime.localnow()
         logger.info(f'Retrying full cycle...')
         FullCycle(Config, skipFood=args.noFood)
