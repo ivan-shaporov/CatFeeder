@@ -25,7 +25,7 @@ def _RotateCounterClockwise():
     GPIO.output(PinInput2, GPIO.LOW)
     GPIO.output(PinInput1, GPIO.HIGH)
 
-def _Stop():
+def StopMotor():
     logger.info(f'Motor stopping')
     GPIO.output(PinInput1, GPIO.LOW);
     GPIO.output(PinInput2, GPIO.LOW);
@@ -35,13 +35,13 @@ def Feed():
 
     _RotateCounterClockwise()
     sleep(ActionTime)
-    _Stop()
+    StopMotor()
 
     sleep(1.0);
 
     _RotateClockwise()
     sleep(ActionTime)
-    _Stop()
+    StopMotor()
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@ import Light
 from AnalyzeImage import AnalyzeImage, GetImageUrl
 from BlobUpload import UploadPackage, GetBlobnbame, UploadMetadata
 from Camera import StartRecording, StartEncoding, StartExtracting, GetVideoName
-from FoodDispenser import Feed
+from FoodDispenser import Feed, StopMotor
 
 logger = logging.getLogger('CatFeeder')
 events = logging.getLogger('CatFeeder_events')
@@ -85,6 +85,7 @@ def FullCycle(config, skipFood):
         return noFood and not skipFood
     except:
         logger.exception()
+        StopMotor()
         Light.Off()
         return False
 
