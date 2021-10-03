@@ -33,13 +33,13 @@ def StopMotor():
 def Feed():
     _Init()
 
-    _RotateCounterClockwise()
+    _RotateClockwise()
     sleep(ActionTime)
     StopMotor()
 
     sleep(1.0);
 
-    _RotateClockwise()
+    _RotateCounterClockwise()
     sleep(ActionTime)
     StopMotor()
 
