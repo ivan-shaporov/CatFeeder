@@ -12,6 +12,9 @@ logger = logging.getLogger('CatFeeder')
 def UploadBlob(filepath, blob_name, config):
     blob = _GetBlobClient(blob_name, config)
 
+    if not path.isfile(filepath):
+        return False
+
     for attempt in range(config.UploadRetryCount):
         try:
             logger.info(f'{filepath} to {blob_name} attempt #{attempt}')
@@ -20,7 +23,7 @@ def UploadBlob(filepath, blob_name, config):
                 logger.info(f'{blob_name} uploaded')
                 return True
         except Exception as e:
-            logger.exception("Upload failed")
+            logger.exception(f'Upload of "{blob_name}" failed')
             sleep(8 ** (attempt + 1))
 
     archivePath = path.join(path.dirname(path.abspath(__file__)), 'FailedUploads', path.basename(blob_name))

@@ -1,2 +1,3 @@
 azure-storage-blob
 opencensus-ext-azure
+azure-iot-device==2.4.0

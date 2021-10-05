@@ -365,3 +365,5 @@ FodyWeavers.xsd
 *.bak
 /Downloads
 /Software/Services/Config.py
+/Software/Services/credentials.py
+/Software/Services/emulator_credentials.py

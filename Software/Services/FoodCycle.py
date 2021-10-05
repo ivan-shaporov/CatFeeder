@@ -14,27 +14,26 @@ from FoodDispenser import Feed, StopMotor
 logger = logging.getLogger('CatFeeder')
 events = logging.getLogger('CatFeeder_events')
 
-def FullCycle(config, skipFood):
+def FullCycle(config, scoops):
     '''
     Returns True if retry is needed.
     '''
 
     try:
-        p = StartRecording(config)
+        p = StartRecording(config, config.TruncMovementTime * 3 * scoops + config.VideoDuration)
 
         Light.On()
 
-        if not skipFood:
-            Feed()
-        else:
-            logger.info('Skipping food')
+        logger.info(f'giving {scoops} scoops...')
+        for _ in range(scoops):
+            Feed(config.TruncMovementTime)
         
         error = p.wait()
         if error != 0:
             logger.error(f'Video recording failed')
             return False
 
-        p = StartEncoding(Config)
+        p = StartEncoding(config)
 
         time.sleep(config.LightDuration)
         Light.Off()
@@ -43,7 +42,7 @@ def FullCycle(config, skipFood):
             logger.error(f'Video encoding failed')
             return False
 
-        if StartExtracting(Config).wait() != 0:
+        if StartExtracting(config, config.TruncMovementTime * 3 * scoops + 1).wait() != 0:
             logger.error(f'Poster extracting failed')
             return False
 
@@ -74,7 +73,7 @@ def FullCycle(config, skipFood):
         else:
             logger.info(f'Food cycle completed.', extra=properties)
 
-        eventValue = 'skipped' if skipFood else 'failed' if noFood else 'delivered'
+        eventValue = 'skipped' if scoops <= 0 else 'failed' if noFood else 'delivered'
         properties['custom_dimensions']['eventType'] = 'Food'
         properties['custom_dimensions']['eventValue'] = eventValue
         properties['custom_dimensions']['eventTime'] = str(now)
@@ -82,7 +81,7 @@ def FullCycle(config, skipFood):
 
         UploadMetadata({'imagedetections': json.dumps(results)}, blobname, config)
 
-        return noFood and not skipFood
+        return noFood and scoops > 0
     except:
         logger.exception()
         StopMotor()
@@ -103,7 +102,7 @@ if __name__ == '__main__':
     events.setLevel(logging.INFO)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-noFood', '-n', action='store_true')
+    parser.add_argument('-scoops', '-s', type=int, default=1)
     parser.add_argument('-videoDuration', '-v', type=int, default=Config.VideoDuration)
     args = parser.parse_args()
 
@@ -111,9 +110,9 @@ if __name__ == '__main__':
         Config.VideoDuration = args.videoDuration
         logger.info(f'VideoDuration={Config.VideoDuration}')
 
-    retry = FullCycle(Config, skipFood=args.noFood)
+    retry = FullCycle(Config, scoops=args.scoops)
 
     if retry:
-        now = datetime.localnow()
+        now = localnow()
         logger.info(f'Retrying full cycle...')
-        FullCycle(Config, skipFood=args.noFood)
+        FullCycle(Config, scoops=args.scoops)

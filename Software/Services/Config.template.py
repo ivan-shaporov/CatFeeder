@@ -13,9 +13,10 @@ ReadSas = 'si=read& ... '
 BlobUploadSas = 'si=blobUpload& ...'
 UploadRetryCount = 3
 
+TruncMovementTime = 1.0
+
 VideoLocation = '/home/pi/CatFeeder'
 VideoName = 'last'
 VideoDuration = 30
-PosterDelay = 1.8
 
 LightDuration = 60.0

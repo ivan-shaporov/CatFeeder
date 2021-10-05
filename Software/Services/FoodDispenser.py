@@ -30,17 +30,17 @@ def StopMotor():
     GPIO.output(PinInput1, GPIO.LOW);
     GPIO.output(PinInput2, GPIO.LOW);
 
-def Feed():
+def Feed(truncMovementTime):
     _Init()
 
     _RotateClockwise()
-    sleep(ActionTime)
+    sleep(truncMovementTime)
     StopMotor()
 
-    sleep(1.0);
+    sleep(truncMovementTime);
 
     _RotateCounterClockwise()
-    sleep(ActionTime)
+    sleep(truncMovementTime)
     StopMotor()
 
 
@@ -49,4 +49,4 @@ if __name__ == '__main__':
 
     logger.setLevel(logging.INFO)
 
-    Feed()
+    Feed(1)

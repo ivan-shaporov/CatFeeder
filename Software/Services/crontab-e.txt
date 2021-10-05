@@ -1,0 +1,6 @@
+# crontab -e
+0 0,6,9,12,15,18,21 * * * python3 /home/pi/CatFeeder/FoodCycle.py >> /home/pi/CatFeeder/FoodCycle.log 2>&1
+
+@reboot python3 /home/pi/CatFeeder/Light.py -off
+@reboot python3 /home/pi/CatFeeder/iot_hub_device.py >> /home/pi/CatFeeder/FoodCycle.iot.log 2>&1
+
