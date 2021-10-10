@@ -20,13 +20,13 @@ def FullCycle(config, scoops):
     '''
 
     try:
-        p = StartRecording(config, config.TruncMovementTime * 3 * scoops + config.VideoDuration)
+        p = StartRecording(config, config.TrunkMovementTime * 3 * scoops + config.VideoDuration)
 
         Light.On()
 
         logger.info(f'giving {scoops} scoops...')
         for _ in range(scoops):
-            Feed(config.TruncMovementTime)
+            Feed(config.TrunkMovementTime)
         
         error = p.wait()
         if error != 0:
@@ -42,7 +42,7 @@ def FullCycle(config, scoops):
             logger.error(f'Video encoding failed')
             return False
 
-        if StartExtracting(config, config.TruncMovementTime * 3 * scoops + 1).wait() != 0:
+        if StartExtracting(config, config.TrunkMovementTime * 3 * scoops + 1).wait() != 0:
             logger.error(f'Poster extracting failed')
             return False
 
