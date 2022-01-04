@@ -20,6 +20,8 @@ def FullCycle(config, scoops):
     '''
 
     try:
+        now = localnow()
+
         p = StartRecording(config, config.TrunkMovementTime * 3 * scoops + config.VideoDuration)
 
         Light.On()
@@ -91,7 +93,6 @@ def FullCycle(config, scoops):
 def localnow(): return datetime.now(datetime.utcnow().astimezone().tzinfo)
 
 if __name__ == '__main__':
-    now = localnow()
     import Config
 
     logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s')
@@ -113,6 +114,5 @@ if __name__ == '__main__':
     retry = FullCycle(Config, scoops=args.scoops)
 
     if retry:
-        now = localnow()
         logger.info(f'Retrying full cycle...')
         FullCycle(Config, scoops=args.scoops)
