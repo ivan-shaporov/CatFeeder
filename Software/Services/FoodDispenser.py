@@ -1,4 +1,5 @@
 import logging
+import sys
 from time import sleep
 import RPi.GPIO as GPIO  
 
@@ -37,23 +38,37 @@ def TrunkDown(trunkMovementTime):
     sleep(trunkMovementTime)
     StopMotor()
 
-def Feed(trunkMovementTime):
+def Feed(config):
     _Init()
 
-    _RotateClockwise()
-    sleep(trunkMovementTime)
-    StopMotor()
+    try:
+        _RotateCounterClockwise()
+        sleep(config.TrunkMovementTimeUp)
+        StopMotor()
 
-    sleep(trunkMovementTime)
+        sleep(config.TrunkLoadTime)
 
-    _RotateCounterClockwise()
-    sleep(trunkMovementTime)
-    StopMotor()
-
+        _RotateClockwise()
+        sleep(config.TrunkMovementTimeDown)
+        StopMotor()
+        return True
+    except:
+        logger.exception('Feed failed')
+        StopMotor()
+        return False
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s')
 
     logger.setLevel(logging.INFO)
 
-    Feed(1)
+    if len(sys.argv) == 2:
+        dt = float(sys.argv[1])
+        _Init()
+        if dt > 0: _RotateClockwise()
+        else: _RotateCounterClockwise()
+        sleep(abs(dt))
+        StopMotor()
+    else:
+        import Config
+        Feed(Config)

@@ -22,13 +22,15 @@ def FullCycle(config, scoops):
     try:
         now = localnow()
 
-        p = StartRecording(config, config.TrunkMovementTime * 3 * scoops + config.VideoDuration)
+        cycleDuration = config.TrunkMovementTimeUp + config.TrunkLoadTime + config.TrunkMovementTimeDown
+
+        p = StartRecording(config, cycleDuration * scoops + config.VideoDuration)
 
         Light.On()
 
         logger.info(f'giving {scoops} scoops...')
         for _ in range(scoops):
-            Feed(config.TrunkMovementTime)
+            if not Feed(config): break
         
         error = p.wait()
         if error != 0:
@@ -44,7 +46,7 @@ def FullCycle(config, scoops):
             logger.error(f'Video encoding failed')
             return False
 
-        if StartExtracting(config, config.TrunkMovementTime * 3 * scoops + 1).wait() != 0:
+        if StartExtracting(config, cycleDuration * scoops + 2).wait() != 0:
             logger.error(f'Poster extracting failed')
             return False
 
@@ -61,14 +63,12 @@ def FullCycle(config, scoops):
 
         tags = {r['tagName']: r['probability'] for r in results}
         emptyPlate = 'EmptyPlate' in tags
-        liftedTrunk = 'LiftedTrunk' in tags
-        trunk = 'Trunk' in tags
         foodPile = 'FoodPile' in tags
 
         imageUrl = GetImageUrl(blobname, config)
         properties = {'custom_dimensions': {'imageUrl': imageUrl, 'tags': json.dumps(tags)}}
 
-        noFood = (not foodPile) and (liftedTrunk or trunk or emptyPlate)
+        noFood = (not foodPile) and emptyPlate
 
         if noFood:
             logger.warning(f'Food cycle completed. No food.', extra=properties)
@@ -85,7 +85,7 @@ def FullCycle(config, scoops):
 
         return noFood and scoops > 0
     except:
-        logger.exception()
+        logger.exception('Full cycle failed')
         StopMotor()
         Light.Off()
         return False
