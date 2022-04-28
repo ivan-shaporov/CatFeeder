@@ -42,6 +42,7 @@ def Feed(config):
     _Init()
 
     try:
+        logger.info(f'Feed cycle: {config.TrunkMovementTimeUp}/{config.TrunkLoadTime}/{config.TrunkMovementTimeDown}')
         _RotateCounterClockwise()
         sleep(config.TrunkMovementTimeUp)
         StopMotor()

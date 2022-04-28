@@ -11,7 +11,6 @@ import Light
 from BlobUpload import UploadPackage
 from Camera import TakePhoto, TakeVideo
 from FoodCycle import FullCycle
-from FoodDispenser import TrunkDown
 
 # from device_exception import DeviceException
 
@@ -24,7 +23,7 @@ class StationDriver:
         self.Loop = loop
         self.Delay = 60
         self.Tasks = asyncio.gather(self.send_telemetry())
-        TrunkDown(Config.TrunkMovementTime)
+        # TrunkDown(Config.TrunkMovementTimeDown)
 
         logger.info(f'Device started.')
 
