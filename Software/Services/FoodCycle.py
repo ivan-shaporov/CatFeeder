@@ -46,7 +46,7 @@ def FullCycle(config, scoops):
             logger.error(f'Video encoding failed')
             return False
 
-        if StartExtracting(config, cycleDuration * scoops + 4).wait() != 0:
+        if StartExtracting(config, cycleDuration * scoops + 4.5).wait() != 0:
             logger.error(f'Poster extracting failed')
             return False
 
