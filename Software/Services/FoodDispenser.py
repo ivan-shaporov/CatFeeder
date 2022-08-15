@@ -31,11 +31,16 @@ def StopMotor():
     GPIO.output(PinInput1, GPIO.LOW);
     GPIO.output(PinInput2, GPIO.LOW);
 
-def TrunkDown(trunkMovementTime):
-    _Init()
+def _MoveTrunk(rotate, time):
+    stumble_before = 0.5
+    rotate()
+    sleep(time - stumble_before)
+    StopMotor()
 
-    _RotateCounterClockwise()
-    sleep(trunkMovementTime)
+    sleep(.5)
+
+    rotate()
+    sleep(stumble_before)
     StopMotor()
 
 def Feed(config):
@@ -43,15 +48,9 @@ def Feed(config):
 
     try:
         logger.info(f'Feed cycle: {config.TrunkMovementTimeUp}/{config.TrunkLoadTime}/{config.TrunkMovementTimeDown}')
-        _RotateCounterClockwise()
-        sleep(config.TrunkMovementTimeUp)
-        StopMotor()
-
+        _MoveTrunk(_RotateCounterClockwise, config.TrunkMovementTimeUp)
         sleep(config.TrunkLoadTime)
-
-        _RotateClockwise()
-        sleep(config.TrunkMovementTimeDown)
-        StopMotor()
+        _MoveTrunk(_RotateClockwise, config.TrunkMovementTimeDown)
         return True
     except:
         logger.exception('Feed failed')

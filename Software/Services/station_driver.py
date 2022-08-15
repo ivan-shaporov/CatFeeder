@@ -23,7 +23,6 @@ class StationDriver:
         self.Loop = loop
         self.Delay = 60
         self.Tasks = asyncio.gather(self.send_telemetry())
-        # TrunkDown(Config.TrunkMovementTimeDown)
 
         logger.info(f'Device started.')
 
