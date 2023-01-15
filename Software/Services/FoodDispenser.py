@@ -1,7 +1,8 @@
 import logging
 import sys
 from time import sleep
-import RPi.GPIO as GPIO  
+import RPi.GPIO as GPIO
+import Light
 
 logger = logging.getLogger('CatFeeder')
 
@@ -17,58 +18,57 @@ def _Init():
     logger.info(f'FoodDispenser Initialized')
 
 def _RotateClockwise():
-    logger.info(f'Rotating clockwise')
     GPIO.output(PinInput1, GPIO.LOW)
     GPIO.output(PinInput2, GPIO.HIGH)
 
 def _RotateCounterClockwise():
-    logger.info(f'Rotating counterclockwise')
     GPIO.output(PinInput2, GPIO.LOW)
     GPIO.output(PinInput1, GPIO.HIGH)
 
 def StopMotor():
-    logger.info(f'Motor stopping')
     GPIO.output(PinInput1, GPIO.LOW);
     GPIO.output(PinInput2, GPIO.LOW);
 
-def _MoveTrunk(rotate, time):
-    stumble_before = 0.5
-    rotate()
-    sleep(time - stumble_before)
+def _Rotate(time, duty_cycle):
+    rotate = _RotateCounterClockwise if duty_cycle > 0 else _RotateClockwise
+    duty_cycle = abs(duty_cycle)
+
+    step = .05
+    on = step * duty_cycle
+    off = step * (1 - duty_cycle)
+
+    t = 0
+    while t < time:
+        if duty_cycle != 0:
+            rotate()
+            sleep(on)
+        if duty_cycle != 1:
+            StopMotor()
+            sleep(off)
+        t += step
     StopMotor()
 
-    sleep(.5)
-
-    rotate()
-    sleep(stumble_before)
-    StopMotor()
-
-def Feed(config):
+def Feed(profile):
     _Init()
 
     try:
-        logger.info(f'Feed cycle: {config.TrunkMovementTimeUp}/{config.TrunkLoadTime}/{config.TrunkMovementTimeDown}')
-        _MoveTrunk(_RotateCounterClockwise, config.TrunkMovementTimeUp)
-        sleep(config.TrunkLoadTime)
-        _MoveTrunk(_RotateClockwise, config.TrunkMovementTimeDown)
+        logger.info(f'Feed cycle: {profile}')
+        for t, duty_cycle in profile:
+            _Rotate(t, duty_cycle)
         return True
     except:
         logger.exception('Feed failed')
         StopMotor()
         return False
 
+
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s')
 
     logger.setLevel(logging.INFO)
 
-    if len(sys.argv) == 2:
-        dt = float(sys.argv[1])
-        _Init()
-        if dt > 0: _RotateClockwise()
-        else: _RotateCounterClockwise()
-        sleep(abs(dt))
-        StopMotor()
-    else:
-        import Config
-        Feed(Config)
+    from Config import FoodCycleProfile
+
+    Light.On()
+    Feed(FoodCycleProfile)
+    Light.Off()

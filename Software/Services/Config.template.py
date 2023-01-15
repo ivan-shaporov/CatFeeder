@@ -13,10 +13,9 @@ ReadSas = 'si=read& ... '
 BlobUploadSas = 'si=blobUpload& ...'
 UploadRetryCount = 3
 
-TrunkMovementTimeUp = 6.8
-TrunkLoadTime = 1.5
-TrunkMovementTimeDown = 6.5
-FoodPourDelay = 6
+# FoodCycleProfile = [(6.8, 1), (5, .5), (6.4, -1), (4, -.5)] # low load
+FoodCycleProfile = [(1, 1), (6.5, 1), (5, .5), (1, -1), (5, -1), (4, -.5)]
+FoodPourDelay = 1
 
 VideoLocation = '/home/pi/CatFeeder'
 VideoName = 'last'

@@ -22,7 +22,9 @@ def FullCycle(config, scoops):
     try:
         now = localnow()
 
-        cycleDuration = config.TrunkMovementTimeUp + config.TrunkLoadTime + config.TrunkMovementTimeDown
+        profile = config.FoodCycleProfile
+
+        cycleDuration = sum((abs(p[0]) for p in profile ))
 
         p = StartRecording(config, cycleDuration * scoops + config.VideoDuration)
 
@@ -30,7 +32,7 @@ def FullCycle(config, scoops):
 
         logger.info(f'giving {scoops} scoops...')
         for _ in range(scoops):
-            if not Feed(config): break
+            if not Feed(profile): break
         
         error = p.wait()
         if error != 0:

@@ -1,3 +1,6 @@
+# might need sudo -H pip install 
+# so that packages are available for root in etc_rc.local
+
 azure-storage-blob
 opencensus-ext-azure
 azure-iot-device==2.4.0
