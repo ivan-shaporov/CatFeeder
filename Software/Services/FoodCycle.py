@@ -14,6 +14,7 @@ from FoodDispenser import Feed, StopMotor
 logger = logging.getLogger('CatFeeder')
 events = logging.getLogger('CatFeeder_events')
 
+
 def FullCycle(config, scoops):
     '''
     Returns True if retry is needed.
@@ -24,7 +25,7 @@ def FullCycle(config, scoops):
 
         profile = config.FoodCycleProfile
 
-        cycleDuration = sum((abs(p[0]) for p in profile ))
+        cycleDuration = sum((abs(p[0]) for p in profile))
 
         p = StartRecording(config, cycleDuration * scoops + config.VideoDuration)
 
@@ -32,11 +33,12 @@ def FullCycle(config, scoops):
 
         logger.info(f'giving {scoops} scoops...')
         for _ in range(scoops):
-            if not Feed(profile): break
-        
+            if not Feed(profile):
+                break
+
         error = p.wait()
         if error != 0:
-            logger.error(f'Video recording failed')
+            logger.error('Video recording failed')
             return False
 
         p = StartEncoding(config)
@@ -45,11 +47,11 @@ def FullCycle(config, scoops):
         Light.Off()
 
         if p.wait() != 0:
-            logger.error(f'Video encoding failed')
+            logger.error('Video encoding failed')
             return False
 
         if StartExtracting(config, cycleDuration * scoops + config.FoodPourDelay).wait() != 0:
-            logger.error(f'Poster extracting failed')
+            logger.error('Poster extracting failed')
             return False
 
         jpegAvailable = UploadPackage(GetVideoName(config), now, config)
@@ -61,7 +63,7 @@ def FullCycle(config, scoops):
 
         results = AnalyzeImage(blobname, config)
 
-        print (results)
+        print(results)
 
         tags = {r['tagName']: r['probability'] for r in results}
         emptyPlate = 'EmptyPlate' in tags
@@ -73,9 +75,9 @@ def FullCycle(config, scoops):
         noFood = (not foodPile) and emptyPlate
 
         if noFood:
-            logger.warning(f'Food cycle completed. No food.', extra=properties)
+            logger.warning('Food cycle completed. No food.', extra=properties)
         else:
-            logger.info(f'Food cycle completed.', extra=properties)
+            logger.info('Food cycle completed.', extra=properties)
 
         eventValue = 'skipped' if scoops <= 0 else 'failed' if noFood else 'delivered'
         properties['custom_dimensions']['eventType'] = 'Food'
@@ -86,13 +88,15 @@ def FullCycle(config, scoops):
         UploadMetadata({'imagedetections': json.dumps(results)}, blobname, config)
 
         return noFood and scoops > 0
-    except:
+    except Exception:
         logger.exception('Full cycle failed')
         StopMotor()
         Light.Off()
         return False
 
+
 def localnow(): return datetime.now(datetime.utcnow().astimezone().tzinfo)
+
 
 if __name__ == '__main__':
     import Config
@@ -116,5 +120,5 @@ if __name__ == '__main__':
     retry = FullCycle(Config, scoops=args.scoops)
 
     if retry:
-        logger.info(f'Retrying full cycle...')
+        logger.info('Retrying full cycle...')
         FullCycle(Config, scoops=args.scoops)

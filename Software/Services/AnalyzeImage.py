@@ -4,6 +4,7 @@ import requests
 
 logger = logging.getLogger('CatFeeder')
 
+
 def AnalyzeImage(blobname, config):
 
     imageUrl = f'{GetImageUrl(blobname, config)}?{config.ReadSas}'
@@ -11,19 +12,22 @@ def AnalyzeImage(blobname, config):
     logger.info(f'Analyze imageUrl={imageUrl}')
 
     response = requests.post(
-        config.AzureCognitiveServiceUrl, 
-        json={'Url': imageUrl}, 
-        headers={'Content-Type':'application/json', 'Prediction-Key': config.AzureCognitiveServiceKey})
+        config.AzureCognitiveServiceUrl,
+        json={'Url': imageUrl},
+        headers={'Content-Type': 'application/json', 'Prediction-Key': config.AzureCognitiveServiceKey})
 
     if response.status_code != 200:
         logger.error(f'Analyze request failed {response.status_code}: {response.reason}')
-        return None
+        return []
 
     results = [p for p in response.json()['predictions'] if p['probability'] > config.DetectionThreshold]
 
     return results
 
-def GetImageUrl(blobname, config): return f'https://{config.StorageAccount}.blob.core.windows.net/{config.StorageContainer}/{blobname}'
+
+def GetImageUrl(blobname, config):
+    return f'https://{config.StorageAccount}.blob.core.windows.net/{config.StorageContainer}/{blobname}'
+
 
 if __name__ == '__main__':
     import Config
@@ -36,7 +40,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     results = AnalyzeImage(args.file, Config)
-    print (results)
+    print(results)
 
     tags = [r['tagName'] for r in results]
     emptyPlate = 'EmptyPlate' in tags
@@ -44,7 +48,11 @@ if __name__ == '__main__':
     trunk = 'Trunk' in tags
     foodPile = 'FoodPile' in tags
 
-    if emptyPlate: print('emptyPlate')
-    if liftedTrunk: print('liftedTrunk')
-    if trunk: print('trunk')
-    if foodPile: print('foodPile')
+    if emptyPlate:
+        print('emptyPlate')
+    if liftedTrunk:
+        print('liftedTrunk')
+    if trunk:
+        print('trunk')
+    if foodPile:
+        print('foodPile')

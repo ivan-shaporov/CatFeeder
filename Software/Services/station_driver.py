@@ -24,8 +24,7 @@ class StationDriver:
         self.Delay = 60
         self.Tasks = asyncio.gather(self.send_telemetry())
 
-        logger.info(f'Device started.')
-
+        logger.info('Device started.')
 
     async def send_telemetry(self):
         logger.debug(f'Sending telemetry from the provisioned device every {self.Delay} seconds')
@@ -39,11 +38,9 @@ class StationDriver:
             logger.debug(f'Sent message: {msg}')
             await asyncio.sleep(self.Delay)
 
-
     def reboot(self):
         logger.info('rebooting')
         os.system('sudo reboot')
-
 
     def take_photo(self):
         filename = os.path.join(Config.VideoLocation, 'photo.jpg')
@@ -55,7 +52,6 @@ class StationDriver:
             Light.Off()
         logger.debug(f'photo taken {filename}')
         UploadPackage(filename, now, Config)
-
 
     async def take_video(self, seconds):
         logger.info(f'take_video({seconds})')
@@ -72,16 +68,15 @@ class StationDriver:
             name = os.path.join(config.VideoLocation, 'video')
             filename = TakeVideo(name, seconds)
 
-            Light.Off() # todo: light stays on too long, including encoding time
+            Light.Off()  # todo: light stays on too long, including encoding time
 
             UploadPackage(filename, now, config)
 
-            logger.info(f'take_video completed')
+            logger.info('take_video completed')
         finally:
             Light.Off()
-
 
     def run_food_cycle(self, scoops):
         logger.info(f'run_food_cycle({scoops})')
         FullCycle(Config, scoops)
-        logger.info(f'run_food_cycle completed')
+        logger.info('run_food_cycle completed')
