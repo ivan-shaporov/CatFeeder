@@ -1,5 +1,4 @@
 import logging
-import sys
 from time import sleep
 import RPi.GPIO as GPIO
 import Light
@@ -10,24 +9,29 @@ PinInput1 = 7
 PinInput2 = 5
 ActionTime = 1.0
 
+
 def _Init():
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
     GPIO.setup(PinInput1, GPIO.OUT)
     GPIO.setup(PinInput2, GPIO.OUT)
-    logger.info(f'FoodDispenser Initialized')
+    logger.info('FoodDispenser Initialized')
+
 
 def _RotateClockwise():
     GPIO.output(PinInput1, GPIO.LOW)
     GPIO.output(PinInput2, GPIO.HIGH)
 
+
 def _RotateCounterClockwise():
     GPIO.output(PinInput2, GPIO.LOW)
     GPIO.output(PinInput1, GPIO.HIGH)
 
+
 def StopMotor():
-    GPIO.output(PinInput1, GPIO.LOW);
-    GPIO.output(PinInput2, GPIO.LOW);
+    GPIO.output(PinInput1, GPIO.LOW)
+    GPIO.output(PinInput2, GPIO.LOW)
+
 
 def _Rotate(time, duty_cycle):
     rotate = _RotateCounterClockwise if duty_cycle > 0 else _RotateClockwise
@@ -48,6 +52,7 @@ def _Rotate(time, duty_cycle):
         t += step
     StopMotor()
 
+
 def Feed(profile):
     _Init()
 
@@ -56,7 +61,7 @@ def Feed(profile):
         for t, duty_cycle in profile:
             _Rotate(t, duty_cycle)
         return True
-    except:
+    except Exception:
         logger.exception('Feed failed')
         StopMotor()
         return False
