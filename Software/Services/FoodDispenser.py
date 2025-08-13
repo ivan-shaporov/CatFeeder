@@ -74,6 +74,10 @@ if __name__ == '__main__':
 
     from Config import FoodCycleProfile
 
+    cycle = FoodCycleProfile
+    # cycle = [(60*5, -1), (60*2, 1)] * 10
+    # cycle = [(5, -1), (2, 1)]
+
     Light.On()
-    Feed(FoodCycleProfile)
+    Feed(cycle)
     Light.Off()
